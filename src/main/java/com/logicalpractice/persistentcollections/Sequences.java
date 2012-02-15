@@ -23,7 +23,39 @@ public class Sequences {
     public static <T> Iterable<T> headlessIterable(Sequence<T> sequence){
         return new HeadlessIterable<T>(sequence);
     }
+    
+    public static <T> Sequence<T> construct(T obj){
+        return new DefaultSequence<T>(obj);
+    }
+    
+    public static <T> Sequence<T> construct(T obj, Sequence<T> sequence){
+        return new DefaultSequence<T>(obj, sequence);
+    }
 
+    private static class DefaultSequence<T> implements Sequence<T> {
+        private final T value;
+        private final Sequence<T> rest;
+
+        public DefaultSequence(T value, Sequence<T> rest){
+            this.value = value;
+            this.rest = rest;
+        }
+
+        public DefaultSequence(T value) {
+            this(value, null);
+        }
+
+        @Override
+        public T first() {
+            return value;
+        }
+
+        @Override
+        public Sequence<T> rest() {
+            return rest; // maybe null at end of sequence
+        }
+    }
+    
     private static class IterableSequence<T> implements Iterable<T> {
 
         private final Sequence<T> sequence;
