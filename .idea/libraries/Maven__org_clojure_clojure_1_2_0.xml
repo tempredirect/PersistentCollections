@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Maven: org.clojure:clojure:1.2.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/clojure/clojure/1.2.0/clojure-1.2.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/org/clojure/clojure/1.2.0/clojure-1.2.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/clojure/clojure/1.2.0/clojure-1.2.0-sources.jar!/" />
+      <root url="file://$PROJECT_DIR$/../external/clojure/src/jvm" />
+    </SOURCES>
+  </library>
+</component>
