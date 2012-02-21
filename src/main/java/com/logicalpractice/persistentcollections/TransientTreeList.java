@@ -141,19 +141,30 @@ final class TransientTreeList<T> extends AbstractList<T> implements TransientLis
       return ret;
    }
 
-   public TransientList pop() {
+   @Override
+   public T remove(int index) {
       ensureEditable();
-      if (cnt == 0)
+      if ( index != cnt - 1) {
+         throw new IllegalArgumentException("TransientList can only remove from the end of the list!");
+      }
+      if (cnt == 0) {
          throw new IllegalStateException("Can't pop empty vector");
+      }
+      T lastItem = get(index);
+      pop();
+      return lastItem;
+   }
+
+   private void pop() {
       if (cnt == 1) {
          cnt = 0;
-         return this;
+         return ;
       }
       int i = cnt - 1;
       //pop in tail?
       if ((i & 0x01f) > 0) {
          --cnt;
-         return this;
+         return ;
       }
 
       Object[] newtail = arrayFor(cnt - 2);
@@ -171,9 +182,8 @@ final class TransientTreeList<T> extends AbstractList<T> implements TransientLis
       shift = newshift;
       --cnt;
       tail = newtail;
-      return this;
    }
-
+   
    private PersistentLists.Node popTail(int level, PersistentLists.Node node) {
       node = ensureEditable(node);
       int subidx = ((cnt - 2) >>> level) & 0x01f;
