@@ -18,6 +18,7 @@ Missing/Known issues
 --------------------
 
 TransientTreeList isn't a complete list implementation:
+
  * only add and remove are implemented
  * clear()/subList().clear() haven't been implemented
  * iterator().remove()
