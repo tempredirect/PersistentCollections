@@ -144,14 +144,26 @@ final class TransientTreeList<T> extends AbstractList<T> implements TransientLis
    @Override
    public T remove(int index) {
       ensureEditable();
-      if ( index != cnt - 1) {
-         throw new IllegalArgumentException("TransientList can only remove from the end of the list!");
-      }
       if (cnt == 0) {
          throw new IllegalStateException("Can't pop empty vector");
       }
       T lastItem = get(index);
-      pop();
+      int toSave = cnt - 1 - index ;
+      Object [] saved = null;
+      if ( toSave > 0 ) {
+         saved = new Object[toSave];
+         for( int i = 0 ; i < toSave; i ++ ){
+            saved[i] = get(index + i + 1);
+         }
+      }
+      while( cnt != index ){
+         pop();
+      }
+      if ( saved != null ){
+         for (Object o : saved) {
+            add((T)o);
+         }
+      }
       return lastItem;
    }
 
