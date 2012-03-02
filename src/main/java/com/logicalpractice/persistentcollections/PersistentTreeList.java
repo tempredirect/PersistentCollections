@@ -54,7 +54,7 @@ public final class PersistentTreeList<T> extends AbstractList<T> implements Pers
    }
 
    @Override
-   public PersistentList<T> withSet(int i, T val) {
+   public PersistentList<T> with(int i, T val) {
       if (i >= 0 && i < cnt) {
          if (i >= tailoff()) {
             Object[] newTail = new Object[tail.length];
