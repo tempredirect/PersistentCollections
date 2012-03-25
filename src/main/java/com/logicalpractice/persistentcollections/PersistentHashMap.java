@@ -1,16 +1,13 @@
 package com.logicalpractice.persistentcollections;
 
 
-import clojure.lang.Cons;
+//import clojure.lang.Cons;
+//import clojure.lang.ISeq;
+
 import clojure.lang.ISeq;
 
 import java.io.Serializable;
-import java.util.AbstractMap;
-import java.util.AbstractSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 //import clojure.lang.IMapEntry;
@@ -126,13 +123,13 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
       if (key == null)
          return hasNull;
 
-      return (root != null) && root.find(0, Objects.hashCode(key), key, NOT_FOUND) != NOT_FOUND;
+      return (root != null) && root.find(0, Util.hashCode(key), key, NOT_FOUND) != NOT_FOUND;
    }
 
 //public Map.Entry<K,V> entryAt(Object key){
 //	if(key == null)
 //		return hasNull ? new MapEntry<K,V>(null, nullValue) : null;
-//	return (root != null) ? root.find(0, Objects.hashCode(key), key) : null;
+//	return (root != null) ? root.find(0, Util.hashCode(key), key) : null;
 //}
 
    public PersistentHashMap<K, V> with(K key, V val) {
@@ -141,7 +138,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
       }
       Box addedLeaf = new Box(null);
       MapNode newroot = (root == null ? BitmapIndexedNode.EMPTY : root)
-            .assoc(0, Objects.hashCode(key), key, val, addedLeaf);
+            .assoc(0, Util.hashCode(key), key, val, addedLeaf);
       if (newroot == root)
          return this;
       return new PersistentHashMap<K, V>(addedLeaf.val == null ? count : count + 1, newroot, hasNull, nullValue);
@@ -152,12 +149,12 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
       if (key == null)
          return null; // cannot contain null
 
-      return root != null ? (V) root.find(0, Objects.hashCode(key), key, null) : null;
+      return root != null ? (V) root.find(0, Util.hashCode(key), key, null) : null;
    }
    //public Object valAt(Object key, Object notFound){
    //	if(key == null)
    //		return hasNull ? nullValue : notFound;
-   //	return root != null ? root.find(0, Objects.hashCode(key), key, notFound) : notFound;
+   //	return root != null ? root.find(0, Util.hashCode(key), key, notFound) : notFound;
    //}
    //
    //public Object valAt(Object key){
@@ -172,7 +169,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
       if (root == null)
          return this;
 
-      MapNode newroot = root.without(0, Objects.hashCode(key), key);
+      MapNode newroot = root.without(0, Util.hashCode(key), key);
       if (newroot == root)
          return this;
 
@@ -202,10 +199,10 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
       };
    }
 
-   public ISeq seq() {
-      ISeq s = root != null ? root.nodeSeq() : null;
-      return hasNull ? new Cons(new MapEntry(null, nullValue), s) : s;
-   }
+//   public ISeq seq() {
+//      ISeq s = root != null ? root.nodeSeq() : null;
+//      return hasNull ? new Cons(new MapEntry(null, nullValue), s) : s;
+//   }
 
 
    static int mask(int hash, int shift) {
@@ -254,7 +251,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
 //		Box leafFlag = new Box(null);
          leafFlag.val = null;
          MapNode n = (root == null ? BitmapIndexedNode.EMPTY : root)
-               .assoc(edit, 0, Objects.hashCode(key), key, val, leafFlag);
+               .assoc(edit, 0, Util.hashCode(key), key, val, leafFlag);
          if (n != this.root)
             this.root = n;
          if (leafFlag.val != null) this.count++;
@@ -272,7 +269,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
          if (root == null) return this;
 //		Box leafFlag = new Box(null);
          leafFlag.val = null;
-         MapNode n = root.without(edit, 0, Objects.hashCode(key), key, leafFlag);
+         MapNode n = root.without(edit, 0, Util.hashCode(key), key, leafFlag);
          if (n != root)
             this.root = n;
          if (leafFlag.val != null) this.count--;
@@ -293,7 +290,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
                return notFound;
          if (root == null)
             return null;
-         return root.find(0, Objects.hashCode(key), key, notFound);
+         return root.find(0, Util.hashCode(key), key, notFound);
       }
 
       int doCount() {
@@ -512,7 +509,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
                   return this;
                return new BitmapIndexedNode<K, V>(null, bitmap, cloneAndSet(array, 2 * idx + 1, n));
             }
-            if (Objects.equals(key, keyOrNull)) {
+            if (Util.equals(key, keyOrNull)) {
                if (val == valOrNode)
                   return this;
                return new BitmapIndexedNode<K, V>(null, bitmap, cloneAndSet(array, 2 * idx + 1, val));
@@ -534,7 +531,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
                      if (array[j] == null)
                         nodes[i] = (MapNode<K, V>) array[j + 1];
                      else
-                        nodes[i] = BitmapIndexedNode.<K, V>empty().assoc(shift + 5, Objects.hashCode(array[j]), (K) array[j], (V) array[j + 1], addedLeaf);
+                        nodes[i] = BitmapIndexedNode.<K, V>empty().assoc(shift + 5, Util.hashCode(array[j]), (K) array[j], (V) array[j + 1], addedLeaf);
                      j += 2;
                   }
                return new ArrayNode<K, V>(null, n + 1, nodes);
@@ -567,7 +564,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
                return null;
             return new BitmapIndexedNode<K, V>(null, bitmap ^ bit, removePair(array, idx));
          }
-         if (Objects.equals(key, keyOrNull))
+         if (Util.equals(key, keyOrNull))
             // TODO: collapse
             return new BitmapIndexedNode<K, V>(null, bitmap ^ bit, removePair(array, idx));
          return this;
@@ -582,7 +579,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
          Object valOrNode = array[2 * idx + 1];
          if (keyOrNull == null)
             return ((MapNode<K, V>) valOrNode).find(shift + 5, hash, key);
-         if (Objects.equals(key, keyOrNull))
+         if (Util.equals(key, keyOrNull))
             return new MapEntry<K, V>((K) keyOrNull, (V) valOrNode);
          return null;
       }
@@ -596,7 +593,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
          Object valOrNode = array[2 * idx + 1];
          if (keyOrNull == null)
             return ((MapNode<K, V>) valOrNode).find(shift + 5, hash, key, notFound);
-         if (Objects.equals(key, keyOrNull))
+         if (Util.equals(key, keyOrNull))
             return (V) valOrNode;
          return notFound;
       }
@@ -651,7 +648,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
                   return this;
                return editAndSet(edit, 2 * idx + 1, n);
             }
-            if (Objects.equals(key, keyOrNull)) {
+            if (Util.equals(key, keyOrNull)) {
                if (val == valOrNode)
                   return this;
                return editAndSet(edit, 2 * idx + 1, val);
@@ -680,7 +677,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
                      if (array[j] == null)
                         nodes[i] = (MapNode<K, V>) array[j + 1];
                      else
-                        nodes[i] = BitmapIndexedNode.<K, V>empty().assoc(edit, shift + 5, Objects.hashCode(array[j]), (K) array[j], (V) array[j + 1], addedLeaf);
+                        nodes[i] = BitmapIndexedNode.<K, V>empty().assoc(edit, shift + 5, Util.hashCode(array[j]), (K) array[j], (V) array[j + 1], addedLeaf);
                      j += 2;
                   }
                return new ArrayNode<K, V>(edit, n + 1, nodes);
@@ -717,7 +714,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
             removedLeaf.val = removedLeaf;
             return editAndRemovePair(edit, bit, idx);
          }
-         if (Objects.equals(key, keyOrNull)) {
+         if (Util.equals(key, keyOrNull)) {
             removedLeaf.val = removedLeaf;
             // TODO: collapse
             return editAndRemovePair(edit, bit, idx);
@@ -778,7 +775,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
          int idx = findIndex(key);
          if (idx < 0)
             return null;
-         if (Objects.equals(key, array[idx]))
+         if (Util.equals(key, array[idx]))
             return new MapEntry<K, V>((K) array[idx], (V) array[idx + 1]);
          return null;
       }
@@ -787,7 +784,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
          int idx = findIndex(key);
          if (idx < 0)
             return notFound;
-         if (Objects.equals(key, array[idx]))
+         if (Util.equals(key, array[idx]))
             return (V) array[idx + 1];
          return notFound;
       }
@@ -799,7 +796,7 @@ public class PersistentHashMap<K, V> extends AbstractMap<K, V> implements Persis
 
       public int findIndex(Object key) {
          for (int i = 0; i < 2 * count; i += 2) {
-            if (Objects.equals(key, array[i]))
+            if (Util.equals(key, array[i]))
                return i;
          }
          return -1;
@@ -989,7 +986,7 @@ public static void main(String[] args){
    }
 
    private static <K, V> MapNode<K, V> createNode(int shift, K key1, V val1, int key2hash, K key2, V val2) {
-      int key1hash = Objects.hashCode(key1);
+      int key1hash = Util.hashCode(key1);
       if (key1hash == key2hash)
          return new HashCollisionNode<K, V>(null, key1hash, 2, new Object[]{key1, val1, key2, val2});
       Box _ = new Box(null);
@@ -1000,7 +997,7 @@ public static void main(String[] args){
    }
 
    private static <K, V> MapNode<K, V> createNode(AtomicReference<Thread> edit, int shift, Object key1, Object val1, int key2hash, Object key2, Object val2) {
-      int key1hash = Objects.hashCode(key1);
+      int key1hash = Util.hashCode(key1);
       if (key1hash == key2hash)
          return new HashCollisionNode(null, key1hash, 2, new Object[]{key1, val1, key2, val2});
       Box _ = new Box(null);
